@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+    <context:annotation-config/>
+    <context:component-scan base-package="cn.zxy.ls.model"/>
+
+
+    <!-- 引入db.properties -->
+    <context:property-placeholder location="classpath*:db.properties"/>
+
+    <!-- druid 数据库连接池 -->
+    <bean id="ds" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+        <property name="username" value="${db.username}"/>
+        <property name="url" value="${db.url}"/>
+        <property name="password" value="${db.password}"/>
+    </bean>
+
+
+    <!-- mybatis SqlSessionFactory -->
+    <bean id="sf" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="ds"/>
+        <!-- com.entity.Student 可以写 sutdent -->
+        <property name="typeAliasesPackage" value="cn.zxy.ls.model"/>
+        <property name="mapperLocations" value="classpath:cn/zxy/ls/mapper/*Mapper.xml"/>
+    </bean>
+    <!-- 扫描mapper包 自动在spring中生成 xxxxMapper bean -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="cn.zxy.ls.mapper"/>
+        <property name="sqlSessionFactoryBeanName" value="sf"/>
+    </bean>
+</beans>
